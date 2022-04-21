@@ -1,0 +1,143 @@
+create database BDSARA
+go
+
+use BDSARA
+go
+
+CREATE TABLE Rol(
+ID_Rol tinyint primary key identity (1,1) not null,
+TipoRol varchar(20) not null
+);
+
+CREATE TABLE Usuario(
+Cedula bigint primary key not null,
+Nombres varchar (25) not null,
+Apellidos varchar (25) not null,
+Correo varchar(50) not null,
+Celular bigint not null,
+Telefono int not null,
+Contraseña char(8) not null,
+Fecha_Ingreso date not null,
+Empresa varchar(50),
+Estado char(1) not null,
+ID_Rol tinyint Foreign Key References Rol (ID_Rol) not null
+);
+
+CREATE TABLE Vehiculo(
+ID int primary key identity (1,1),
+Placa char(7) not null,
+Marca varchar(15) not null,
+Modelo varchar (15) not null,
+Imagen varbinary(max) not null,
+Cedula bigint Foreign Key References Usuario (Cedula) not null
+);
+
+CREATE TABLE Novedades(
+ID_Novedad int primary key identity (1,1),
+Tipo_Novedad varchar(100) not null,
+Cedula bigint Foreign Key References Usuario (Cedula) not null
+);
+
+CREATE TABLE Servicio(
+ID_Servicio int primary key identity (1,1),
+Tipo_Servicio char(10) not null,
+Empresa varchar(50) not null,
+Precio int not null
+);
+
+CREATE TABLE Solicitud_Servicio(
+ID_Solicitud int primary key identity (1,1),
+NombresFuncionario varchar (25) not null,
+ApellidosFuncionario varchar (25) not null,
+Correo varchar(50) not null,
+Fecha_solicitud date not null,
+Origen varchar(100) not null,
+Destino varchar(100) not null,
+Cedula bigint Foreign Key References Usuario (Cedula) not null,
+ID_Servicio int Foreign Key References Servicio (ID_Servicio) not null
+);
+
+CREATE TABLE Citas(
+ID_Citas int primary key identity (1,1),
+Fecha_Cita date not null,
+Hora time not null,
+ID_Solicitud int Foreign Key References Solicitud_Servicio(ID_Solicitud) not null,
+Conductor bigint Foreign Key References Usuario (Cedula) not null
+);
+
+CREATE TABLE Forma_de_Pago(
+ID_Pago tinyint primary key identity (1,1),
+Tipo_Pago varchar(20) not null
+);
+
+CREATE TABLE Soporte_Pago(
+ID_SoptPago int primary key identity (1,1),
+Fecha date not null,
+AdjuntoComprobante varbinary(max) not null,
+Forma_de_Pago tinyint Foreign Key References Forma_de_Pago(ID_Pago) not null,
+ID_Solicitud int Foreign Key References Solicitud_Servicio(ID_Solicitud) not null
+);
+
+
+
+insert into Rol(TipoRol)
+values('Administrador');
+
+insert into Rol(TipoRol)
+values('Cliente');
+
+insert into Rol(TipoRol)
+values('Conductor');
+
+insert into Usuario(Cedula, Nombres, Apellidos, Correo, Celular, Telefono, Contraseña, Fecha_Ingreso, Empresa, Estado, ID_Rol)
+values(1001095274, 'Pedro Felipe', 'Mendoza Alfonso', 'pedritomenal17@gmail.com', 3106829964, 7358389, '12345678', '2018-10-04', 'DROXI S.A.S', 'A', 1);
+
+insert into Usuario(Cedula, Nombres, Apellidos, Correo, Celular, Telefono, Contraseña, Fecha_Ingreso, Estado, ID_Rol)
+values(1554896655, 'Cristian David', 'Peña Nieto', 'CrisPeñ102@gmail.com', 3214589654, 6954782, '12345678', '2020-07-24', 'A', 3);
+
+insert into Usuario(Cedula, Nombres, Apellidos, Correo, Celular, Telefono, Contraseña, Fecha_Ingreso, Empresa, Estado, ID_Rol)
+values(1998745874, 'Laura Valentina', 'Rubio Rodriguez', 'LAuRub89@gmail.com', 3148549655, 6745896, '12345678', '2021-10-04', 'Banco Caja Social', 'A', 2);
+
+insert into Vehiculo(Placa, Marca, Modelo, Imagen, Cedula)
+values('FPN-234', 'Audi', 'Q7', 484184, 1554896655)
+
+insert into Novedades(Tipo_Novedad, Cedula)
+values ('Calamidad Domestica', 1554896655)
+
+insert into Servicio(Tipo_Servicio, Empresa, Precio)
+values('Transporte', 'Banco Caja Social', 25000)
+
+insert into Solicitud_Servicio(NombresFuncionario, ApellidosFuncionario, Correo, Fecha_solicitud, Origen, Destino, Cedula, ID_Servicio)
+values('Laura Valentina', 'Rubio Rodriguez', 'LAuRub89@gmail.com', '2022-01-01', 'Trv 126c #132b-07, Bogotá, Cundinamarca', 'Cra. 128 #144 28, Bogotá, Cundinamarca', 1998745874, 1)
+
+insert into Citas(Fecha_Cita, Hora, ID_Solicitud, Conductor)
+values('2022-04-03','11:00:00', 1, 1554896655)
+
+insert into Forma_de_Pago(Tipo_Pago)
+values('Efectivo')
+
+insert into Soporte_Pago(Fecha, AdjuntoComprobante, Forma_de_Pago, ID_Solicitud)
+values('2022-04-03', 343223424, 1, 1)
+
+
+
+
+SELECT * FROM Rol
+
+SELECT * FROM Usuario
+
+SELECT * FROM Vehiculo
+
+SELECT * FROM Novedades
+
+SELECT * FROM Servicio
+
+SELECT * FROM Solicitud_Servicio
+
+SELECT * FROM Citas
+
+SELECT * FROM Forma_de_Pago
+
+SELECT * FROM Soporte_Pago
+
+Select u.Nombres, u.Apellidos, v.ID, v.Placa, v.Imagen from Usuario as u inner join Vehiculo as v on u.Cedula=v.Cedula where u.ID_Rol=3
